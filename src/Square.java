@@ -47,9 +47,13 @@ public class Square {
     @Override
     public String toString() {
         if (flag) {
-            return "F";
+            return "\u2690";
         } else if (clicked) {
-            return mine ? "X" : String.valueOf(adjacent);
+            if (mine) {
+                return "\ud83d\udca3";
+            } else {
+                return adjacent == 0 ? "" : String.valueOf(adjacent);
+            }
         } else {
             return " ";
         }

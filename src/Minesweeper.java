@@ -19,7 +19,11 @@ public class Minesweeper extends Application {
     public void updateBoard(Board board, GridPane grid) {
         for (Node node : grid.getChildren()) {
             Button btn = (Button) node;
-            btn.setText(board.getSquare(grid.getRowIndex(node), grid.getColumnIndex(node)).toString());
+            Square sq = board.getSquare(grid.getRowIndex(node), grid.getColumnIndex(node));
+            btn.setText(sq.toString());
+            if (sq.isClicked()) {
+                btn.setStyle("-fx-base: #d8d8d8;");
+            }
         }
     }
     @Override
@@ -32,6 +36,9 @@ public class Minesweeper extends Application {
                 final int fj = j;
                 Button btn = new Button();
                 btn.setText(board.getSquare(fi, fj).toString());
+                btn.setMinHeight(50);
+                btn.setMinWidth(50);
+                btn.setStyle("-fx-base: #b9b9b9;");
                 btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     public void handle(MouseEvent event) {
                         if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
@@ -40,8 +47,6 @@ public class Minesweeper extends Application {
                             } else {
                                 if (!board.click(fi, fj)) {
                                     System.out.println("u lose");
-                                } else if (board.getSquare(fi, fj).getAdjacent() == 0) {
-
                                 }
                             }
                             updateBoard(board, grid);
@@ -51,7 +56,7 @@ public class Minesweeper extends Application {
                 grid.add(btn, j, i);
             }
         }
-        Scene scene = new Scene(grid, 300, 250);
+        Scene scene = new Scene(grid);
         primaryStage.setTitle("MineSweeper");
         primaryStage.setScene(scene);
         primaryStage.show();

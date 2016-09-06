@@ -56,27 +56,37 @@ public class Board {
             return true;
         }
     }
+    public boolean clickAdjacent(int h, int w) {
+        Square s = grid[h][w];
+        boolean mine = false;
+        for (int i = h - 1; i < h + 2; i++) {
+            for (int j = w - 1; j < w + 2; j++) {
+                if (i >= 0 && j >= 0 && i < height && j < width) {
+                    mine = click(i, j) || mine;
+                }
+            }
+        }
+        return mine;
+    }
     public boolean click(int h, int w) {
         if (firstClick) {
             populateMines(h, w);
             firstClick = false;
         }
         Square s = grid[h][w];
-        if (s.isFlag() || s.isClicked()) {
+        if (s.isFlag()) {
             return true;
-        } else if (s.isMine()) {
+        } else if (s.isClicked()) {
+            //Find if enough flagged around- then adjacentClick()
+            return true;
+        }
+        else if (s.isMine()) {
             s.setClicked();
             return false;
         } else {
             s.setClicked();
             if (s.getAdjacent() == 0) {
-                for (int i = h - 1; i < h + 2; i++) {
-                    for (int j = w - 1; j < w + 2; j++) {
-                        if (i >= 0 && j >= 0 && i < height && j < width) {
-                            click(i, j);
-                        }
-                    }
-                }
+                clickAdjacent(h, w);
             }
             return true;
         }
