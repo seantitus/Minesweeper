@@ -13,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Minesweeper extends Application {
@@ -26,10 +28,7 @@ public class Minesweeper extends Application {
             }
         }
     }
-    @Override
-    public void start(Stage primaryStage) {
-        Board board = new Board(10, 8, 8);
-        GridPane grid = new GridPane();
+    private void initialize(GridPane grid, Board board) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 final int fi = i;
@@ -56,7 +55,25 @@ public class Minesweeper extends Application {
                 grid.add(btn, j, i);
             }
         }
-        Scene scene = new Scene(grid);
+    }
+    @Override
+    public void start(Stage primaryStage) {
+        HBox hbox = new HBox();
+        GridPane grid = new GridPane();
+        initialize(grid, new Board(10, 8, 8));
+        VBox sideBar = new VBox();
+        Button startOver = new Button();
+        startOver.setText("Start Over");
+        startOver.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    initialize(grid, new Board(10, 8, 8));
+                }
+            }
+        });
+        sideBar.getChildren().addAll(startOver);
+        hbox.getChildren().addAll(grid, sideBar);
+        Scene scene = new Scene(hbox);
         primaryStage.setTitle("MineSweeper");
         primaryStage.setScene(scene);
         primaryStage.show();
