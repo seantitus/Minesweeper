@@ -32,6 +32,9 @@ public class Square {
     public boolean isFlag() {
         return flag;
     }
+    public int getAdjacent() {
+        return adjacent;
+    }
     public void setAdjacent(int adjacent) {
         this.adjacent = adjacent;
     }
@@ -41,6 +44,7 @@ public class Square {
     public void flag() {
         flag = !flag;
     }
+    @Override
     public String toString() {
         if (flag) {
             return "F";

@@ -3,28 +3,32 @@
  */
 import java.util.Random;
 public class Board {
+    private boolean firstClick;
     private int mines;
     private int flags;
     private int width;
     private int height;
     private Square[][] grid;
 
-    public Board(int mines, int width, int height, int startW, int startH) {
+    public Board(int mines, int width, int height) {
         this.mines = mines;
         this.width = width;
         this.height = height;
+        firstClick = true;
         grid = new Square[height][width];
-        Random rand = new Random();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 grid[i][j] = new Square(i, j);
             }
         }
+    }
+    public void populateMines(int startH, int startW) {
+        Random rand = new Random();
         for (int i = 0; i < mines; i++) {
             int nextWidth = rand.nextInt(width);
             int nextHeight = rand.nextInt(height);
             if ((nextWidth == startW && nextHeight == startH) ||
-            !grid[nextHeight][nextWidth].addMine()) {
+                    !grid[nextHeight][nextWidth].addMine()) {
                 i--;
             }
         }
@@ -33,10 +37,15 @@ public class Board {
                 grid[i][j].setAdjacent(calcAdjacent(i, j));
             }
         }
-        click(startH, startW);
     }
     public Square getSquare(int h, int w) {
         return grid[h][w];
+    }
+    public int getHeight() {
+        return height;
+    }
+    public int getWidth() {
+        return width;
     }
     public boolean flag(int h, int w) {
         Square s = grid[h][w];
@@ -48,6 +57,10 @@ public class Board {
         }
     }
     public boolean click(int h, int w) {
+        if (firstClick) {
+            populateMines(h, w);
+            firstClick = false;
+        }
         Square s = grid[h][w];
         if (s.isFlag() || s.isClicked()) {
             return true;
@@ -56,6 +69,15 @@ public class Board {
             return false;
         } else {
             s.setClicked();
+            if (s.getAdjacent() == 0) {
+                for (int i = h - 1; i < h + 2; i++) {
+                    for (int j = w - 1; j < w + 2; j++) {
+                        if (i >= 0 && j >= 0 && i < height && j < width) {
+                            click(i, j);
+                        }
+                    }
+                }
+            }
             return true;
         }
     }
