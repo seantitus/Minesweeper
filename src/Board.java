@@ -57,16 +57,25 @@ public class Board {
         }
     }
     public boolean clickAdjacent(int h, int w) {
-        Square s = grid[h][w];
-        boolean mine = false;
+        boolean mines = true;
         for (int i = h - 1; i < h + 2; i++) {
             for (int j = w - 1; j < w + 2; j++) {
-                if (i >= 0 && j >= 0 && i < height && j < width) {
-                    mine = click(i, j) || mine;
+                if (i >= 0 && j >= 0 && i < height && j < width && !(i == h && j == w)) {
+                    Square s = grid[i][j];
+                    if (!s.isFlag() && !s.isClicked()) {
+                        s.setClicked();
+                        if (s.getAdjacent() == 0) {
+                            clickAdjacent(i, j);
+                        }
+                    }
+                    else if (!s.isFlag() && s.isMine()) {
+                        s.setClicked();
+                        mines = false;
+                    }
                 }
             }
         }
-        return mine;
+        return mines;
     }
     public boolean click(int h, int w) {
         if (firstClick) {
@@ -77,10 +86,19 @@ public class Board {
         if (s.isFlag()) {
             return true;
         } else if (s.isClicked()) {
-            //Find if enough flagged around- then adjacentClick()
+            int flags = 0;
+            for (int i = h - 1; i < h + 2; i++) {
+                for (int j = w - 1; j < w + 2; j++) {
+                    if (i >= 0 && j >= 0 && i < height && j < width) {
+                        flags += grid[i][j].isFlag() ? 1 : 0;
+                    }
+                }
+            }
+            if (flags == s.getAdjacent()) {
+                return clickAdjacent(h, w);
+            }
             return true;
-        }
-        else if (s.isMine()) {
+        } else if (s.isMine()) {
             s.setClicked();
             return false;
         } else {
