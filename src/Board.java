@@ -47,12 +47,19 @@ public class Board {
     public int getWidth() {
         return width;
     }
+    public int getFlags() {
+        return flags;
+    }
+    public int getMines() {
+        return mines;
+    }
     public boolean flag(int h, int w) {
         Square s = grid[h][w];
         if (s.isClicked()) {
             return false;
         } else {
             s.flag();
+            flags += s.isFlag() ? 1 : -1;
             return true;
         }
     }

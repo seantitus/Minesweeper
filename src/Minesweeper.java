@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,10 +16,11 @@ import javafx.scene.control.Dialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Minesweeper extends Application {
-    public void updateBoard(Board board, GridPane grid) {
+    public void updateBoard(Board board, GridPane grid, Text flagText) {
         for (Node node : grid.getChildren()) {
             Button btn = (Button) node;
             Square sq = board.getSquare(grid.getRowIndex(node), grid.getColumnIndex(node));
@@ -27,10 +29,11 @@ public class Minesweeper extends Application {
                 btn.setStyle("-fx-base: #d8d8d8;");
             }
         }
+        flagText.setText("Flags: " + board.getFlags() + "/" + board.getMines());
     }
-    private void initialize(GridPane grid, Board board) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+    private void initialize(GridPane grid, Board board, Text flagText) {
+        for (int i = 0; i < board.getHeight(); i++) {
+            for (int j = 0; j < board.getWidth(); j++) {
                 final int fi = i;
                 final int fj = j;
                 Button btn = new Button();
@@ -41,14 +44,14 @@ public class Minesweeper extends Application {
                 btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     public void handle(MouseEvent event) {
                         if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
-                            if (event.isControlDown() || event.isSecondaryButtonDown()) {
+                            if (event.isControlDown() || event.getButton() == MouseButton.SECONDARY) {
                                 board.flag(fi, fj);
                             } else {
                                 if (!board.click(fi, fj)) {
                                     System.out.println("u lose");
                                 }
                             }
-                            updateBoard(board, grid);
+                            updateBoard(board, grid, flagText);
                         }
                     }
                 });
@@ -58,20 +61,24 @@ public class Minesweeper extends Application {
     }
     @Override
     public void start(Stage primaryStage) {
+        int mines = 10;
+        int height = 8;
+        int width = 8;
         HBox hbox = new HBox();
         GridPane grid = new GridPane();
-        initialize(grid, new Board(10, 8, 8));
+        Text flagText = new Text("Flags: 0/" + mines);
+        initialize(grid, new Board(mines, height, width), flagText);
         VBox sideBar = new VBox();
         Button startOver = new Button();
         startOver.setText("Start Over");
         startOver.setOnMouseClicked(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
-                    initialize(grid, new Board(10, 8, 8));
+                    initialize(grid, new Board(mines, height, width), flagText);
                 }
             }
         });
-        sideBar.getChildren().addAll(startOver);
+        sideBar.getChildren().addAll(flagText, startOver);
         hbox.getChildren().addAll(grid, sideBar);
         Scene scene = new Scene(hbox);
         primaryStage.setTitle("MineSweeper");
