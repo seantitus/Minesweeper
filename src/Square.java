@@ -23,6 +23,16 @@ public class Square {
         mine = true;
         return true;
     }
+    public void setAdjacent(int adjacent) {
+        this.adjacent = adjacent;
+    }
+    public void setClicked() {
+        clicked = true;
+    }
+    public boolean flag() {
+        flag = !flag;
+        return flag;
+    }
     public boolean isMine() {
         return mine;
     }
@@ -34,15 +44,6 @@ public class Square {
     }
     public int getAdjacent() {
         return adjacent;
-    }
-    public void setAdjacent(int adjacent) {
-        this.adjacent = adjacent;
-    }
-    public void setClicked() {
-        clicked = true;
-    }
-    public void flag() {
-        flag = !flag;
     }
     @Override
     public String toString() {

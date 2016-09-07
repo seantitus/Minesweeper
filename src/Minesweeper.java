@@ -12,7 +12,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -56,6 +55,7 @@ public class Minesweeper extends Application {
                     }
                 });
                 grid.add(btn, j, i);
+                updateBoard(board, grid, flagText);
             }
         }
     }

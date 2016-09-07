@@ -27,12 +27,12 @@ public class Board {
         for (int i = 0; i < mines; i++) {
             int nextWidth = rand.nextInt(width);
             int nextHeight = rand.nextInt(height);
-            if ((nextWidth == startW && nextHeight == startH) ||
-                    !grid[nextHeight][nextWidth].addMine()) {
+            if ((Math.abs(nextWidth - startW) <= 1 && Math.abs(nextHeight - startH) <= 1) ||
+                    !grid[nextHeight][nextWidth].addMine()) { //Ensure starting click gives an empty square
                 i--;
             }
         }
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < height; i++) { //Find the number of adjacent mines for each square
             for (int j = 0; j < width; j++) {
                 grid[i][j].setAdjacent(calcAdjacent(i, j));
             }
@@ -58,8 +58,7 @@ public class Board {
         if (s.isClicked()) {
             return false;
         } else {
-            s.flag();
-            flags += s.isFlag() ? 1 : -1;
+            flags += s.flag() ? 1 : -1;
             return true;
         }
     }
