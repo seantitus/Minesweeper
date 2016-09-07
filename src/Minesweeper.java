@@ -48,6 +48,8 @@ public class Minesweeper extends Application {
                             } else {
                                 if (!board.click(fi, fj)) {
                                     System.out.println("u lose");
+                                } else if (board.isWon()) {
+                                    System.out.println("u win yey");
                                 }
                             }
                             updateBoard(board, grid, flagText);

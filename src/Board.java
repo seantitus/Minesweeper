@@ -4,6 +4,7 @@
 import java.util.Random;
 public class Board {
     private boolean firstClick;
+    private int revealed;
     private int mines;
     private int flags;
     private int width;
@@ -14,6 +15,7 @@ public class Board {
         this.mines = mines;
         this.width = width;
         this.height = height;
+        revealed = 0;
         firstClick = true;
         grid = new Square[height][width];
         for (int i = 0; i < height; i++) {
@@ -53,6 +55,9 @@ public class Board {
     public int getMines() {
         return mines;
     }
+    public boolean isWon() {
+        return revealed == height * width - mines;
+    }
     public boolean flag(int h, int w) {
         Square s = grid[h][w];
         if (s.isClicked()) {
@@ -70,6 +75,7 @@ public class Board {
                     Square s = grid[i][j];
                     if (!s.isFlag() && !s.isClicked()) {
                         s.setClicked();
+                        revealed++;
                         if (s.getAdjacent() == 0) {
                             clickAdjacent(i, j);
                         }
@@ -109,6 +115,7 @@ public class Board {
             return false;
         } else {
             s.setClicked();
+            revealed++;
             if (s.getAdjacent() == 0) {
                 clickAdjacent(h, w);
             }
