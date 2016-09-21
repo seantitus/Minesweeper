@@ -31,7 +31,7 @@ public class Minesweeper extends Application {
         }
         flagText.setText("Flags: " + board.getFlags() + "/" + board.getMines());
     }
-    private void endGame(boolean won, GridPane grid, Board board, Text flagText) {
+    private void endGame(boolean won, int mines, int height, int width, Stage stage) {
         ButtonType newGameButton = new ButtonType("New Game", ButtonBar.ButtonData.OK_DONE);
         Dialog<ButtonType> over = new Dialog<>();
         over.setContentText(won ? "You win!" : "You lose");
@@ -39,12 +39,12 @@ public class Minesweeper extends Application {
         over.getDialogPane().getButtonTypes().add(newGameButton);
         over.showAndWait().ifPresent(response -> {
             if (response == newGameButton) {
-                initialize(grid, board, flagText);
+                playScene(mines, height, width, stage);
             }
         });
 
     }
-    private void initialize(GridPane grid, Board board, Text flagText) {
+    private void initialize(GridPane grid, Board board, Text flagText, Stage stage) {
         for (int i = 0; i < board.getHeight(); i++) {
             for (int j = 0; j < board.getWidth(); j++) {
                 final int fi = i;
@@ -63,16 +63,10 @@ public class Minesweeper extends Application {
                             } else {
                                 if (!board.click(fi, fj)) {
                                     updateBoard(grid, board, flagText);
-                                    Board temp = new Board(board.getMines(), board.getWidth(),
-                                            board.getHeight());
-                                    endGame(false, grid, temp, flagText);
-                                    updateBoard(grid, temp, flagText);
+                                    endGame(false, board.getMines(), board.getHeight(), board.getWidth(), stage);
                                 } else if (board.isWon()) {
                                     updateBoard(grid, board, flagText);
-                                    Board temp = new Board(board.getMines(), board.getWidth(),
-                                            board.getHeight());
-                                    endGame(true, grid, temp, flagText);
-                                    updateBoard(grid, temp, flagText);
+                                    endGame(true, board.getMines(), board.getHeight(), board.getWidth(), stage);
                                 } else {
                                     updateBoard(grid, board, flagText);
                                 }
@@ -85,32 +79,76 @@ public class Minesweeper extends Application {
             }
         }
     }
+    private void showStage(Stage stage) {
+        stage.show();
+    }
+    private void selectScene(Stage stage) {
+        GridPane grid = new GridPane();
+        Button easy = new Button("Easy");
+        Button med = new Button("Medium");
+        Button hard = new Button("Hard");
+        easy.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    playScene(10, 8, 8, stage);
+                }
+            }
+        });
+        med.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    playScene(40, 16, 16, stage);
+                }
+            }
+        });
+        hard.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    playScene(99, 16, 30, stage);
+                }
+            }
+        });
+        grid.add(easy, 0, 0);
+        grid.add(med, 0, 1);
+        grid.add(hard, 1, 0);
+        Scene scene = new Scene(grid);
+        stage.setScene(scene);
+    }
+    private void playScene(int mines, int height, int width, Stage stage) {
+        HBox hbox = new HBox();
+        GridPane grid = new GridPane();
+        Text flagText = new Text("Flags: 0/" + mines);
+        initialize(grid, new Board(mines, width, height), flagText, stage);
+        VBox sideBar = new VBox();
+        Button startOver = new Button("Start Over");
+        Button changeDifficulty = new Button("Change Difficulty");
+        startOver.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    playScene(mines, height, width, stage);
+                }
+            }
+        });
+        changeDifficulty.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
+                    selectScene(stage);
+                }
+            }
+        });
+        sideBar.getChildren().addAll(flagText, startOver, changeDifficulty);
+        hbox.getChildren().addAll(grid, sideBar);
+        Scene scene = new Scene(hbox);
+        stage.setScene(scene);
+    }
     @Override
     public void start(Stage primaryStage) {
         int mines = 10;
         int height = 8;
         int width = 8;
-        HBox hbox = new HBox();
-        GridPane grid = new GridPane();
-        Text flagText = new Text("Flags: 0/" + mines);
-        initialize(grid, new Board(mines, height, width), flagText);
-        VBox sideBar = new VBox();
-        Button startOver = new Button();
-        startOver.setText("Start Over");
-        startOver.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                if (event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) {
-                    initialize(grid, new Board(mines, height, width), flagText);
-                }
-            }
-        });
-        sideBar.getChildren().addAll(flagText, startOver);
-        hbox.getChildren().addAll(grid, sideBar);
-        Scene scene = new Scene(hbox);
         primaryStage.setTitle("MineSweeper");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
+        selectScene(primaryStage);
+        showStage(primaryStage);
     }
     public static void main(String[] args) {
         launch(args);
